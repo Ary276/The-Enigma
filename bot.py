@@ -11,6 +11,7 @@ from discord.ext.tasks import loop
 import datetime
 import time
 from math import inf as infinity
+from PIL import Image, ImageFilter
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
