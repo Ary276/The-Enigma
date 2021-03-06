@@ -1,9 +1,9 @@
 # The-Enigma
-Hello! This is *The Enigma*! A nice fun bot which is integral to the IISc UG'20 server. This is a bot mostly made for use on a few personal Discord servers, however there is great utility in maintaing an active GitHub repository for it to help improve it even more.
+Hello! This is *The Enigma* ! A nice fun bot which is integral to the IISc UG'20 server. This is a bot mostly made for use on a few personal Discord servers, however there is great utility in maintaing an active GitHub repository for it to help improve it even more.
 
 There are many features of this bot, the current updated list of commands include:
 - ask : Asking a Yes/No type question
-- aww : A cute response to send to make soemone _blush_ or just to say Aww to something cute
+- aww : A cute response to send to make someone _blush_ or just to say Aww to something cute
 - count : A feature for counting the number of messages in a Channel. This may take very long, so do not spam this command. This command is under development for message statistics
 - fml : Ever felt angry, annoyed, sad or whatever and just want to say fml virtually? Here you go
 - gif :  Uses Tenor GIF API to send a Gif as per search term. GIF requests are set at PG-13
