@@ -11,7 +11,7 @@ from discord.ext.tasks import loop
 import datetime
 import time
 from math import inf as infinity
-from PIL import Image, ImageFilter
+from PIL import Image, ImageFilter, ImageEnhance
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -39,14 +39,22 @@ async def on_ready():
 	await bot.change_presence(activity=activity)
 	print("The Enigma has connected")
 
-@bot.event
-async def on_member_join(member):
-    channel = bot.get_channel(int(os.getenv("unverified")))
-    channel_1 = bot.get_channel(int(os.getenv('spam')))
-    channel_2 = bot.get_channel(int(os.getenv('senior-spam')))
-    await channel.send(f'Hi {member.name}, welcome to IISc UG 20!')
-    await channel_1.send(f'Hi {member.name}, welcome to IISc UG 20!')
-    await channel_2.send(f'Hi {member.name}, welcome to IISc UG 20!')
+#@bot.event
+#async def on_member_join(member):
+    #channel1 = bot.get_channel(int(os.getenv("unverified")))
+    #channel_1 = bot.get_channel(int(os.getenv('spam')))
+    #channel_2 = bot.get_channel(int(os.getenv('senior-spam')))
+    #channel = await member.create_dm()
+    #await channel.send(f'Hi {member.name}, welcome to the server Enigma is a part of. If you have joined IISc UG 20, kindly contact a moderator to verify your identity so that you can view the server. If you have joined IISc UG 19, kindly follow the instructions given there. Hope you have a nice time with The Enigma!')
+    #await channel_1.send(f'Hi {member.name}, welcome to IISc UG 20!')
+    #await channel_2.send(f'Hi {member.name}, welcome to IISc UG 20!')
+
+#@bot.event
+#async def on_member_remove(member):
+	#channel1 = bot.get_channel(int(os.getenv("unverified")))
+	#channel = await member.create_dm()
+	#await channel.send(f'Hi {member.name}, sorry to see you leave :( Hope you will rejoin the server again! Until then, Adios!')
+	#await channel_1.send(f'{member.name}, left IISc UG 20!')
 
 @bot.command(name='insult', help='Insults a person')
 async def insult(ctx, name):  		
@@ -257,6 +265,11 @@ async def on_message(message):
         else:
             await message.reply("F*cker Don't Ping!!!")
             await message.channel.send(embed = discord.Embed().set_thumbnail(url="https://media.tenor.com/images/f8a02c67648240f3eba5b3fb871e7c37/tenor.gif"))
+	
+    for i in sw:
+    	if i.lower() in message.content.lower():
+            await message.reply("You kiss your mom with that mouth b*tch!")
+            break
     
     try:
         msg_count[str(message.author)] += 1
@@ -283,7 +296,7 @@ async def birthday():
     
     for i in bd.keys():
         if now_month == bd[i].month and now_day == bd[i].day:
-            await channel.send("Happy Birthday " + i + " <@&{}>".format(os.getenv(bday_kid)) + "  🎂 🥂")
+            await channel.send("Happy Birthday " + i + " <@&{}>".format(os.getenv('bdaykid')) + "  🎂 🥂")
             await channel.send(" 🎉 🎊 🥳 🎁 🍕 ")
             pass
         else:
@@ -447,6 +460,8 @@ async def tic_tac_toe(ctx, name = "Charlie"):
 @bot.event
 async def on_command_error(ctx, *args, **kwargs):
     await ctx.send(args[0])
+    log = await bot.fetch_channel(os.getenv('log_channel'))
+    await log.send(embed=discord.Embed(title="Error", description = str(args[:])))
 
 @bot.listen("on_error")
 async def on_error(event, *args, **kwargs):
@@ -460,26 +475,84 @@ async def count(ctx):
 			count +=1
 		await ctx.send(count)
 
+@bot.command("filter", help="Modifies the Avatar to generate a filtered Image")
+async def filter(ctx):
+	url = ctx.author.avatar_url
+	im = Image.open(requests.get(url, stream=True).raw)
+	width, height = im.size
+	n = random.random()
+	m = random.gauss(1, n)
+	for i in range(width): # for every pixel:
+		for j in range(height):
+			r,g,b = im.getpixel((i,j))
+			r = int(r*m) % 255
+			g = int(g*m) % 255
+			b = int(b*m) % 255
+			im.putpixel( (i,j), (r,g,b))
+	im = im.filter(ImageFilter.DETAIL)
+	im = im.filter(ImageFilter.EDGE_ENHANCE)
+	im = im.filter(ImageFilter.SMOOTH)
+	im.save("out.jpg")
+	await ctx.send(file=discord.File("out.jpg"))
+
+@bot.command("comm", help="Merges the Avatar with the Communist Flag")
+async def comm(ctx):
+	url = ctx.author.avatar_url
+	im = Image.open(requests.get(url, stream=True).raw)
+	x, y = im.size
+	url2 = 'https://wallpapercave.com/wp/wp25174.jpg'
+	img = Image.open(requests.get(url2, stream=True).raw).crop((1250-x//2, 840-y//2 , 1250+x//2 , 840+y//2 ))
+	for i in range(0, 2*(x//2), 2): # for every pixel:
+		for j in range(0,2*(y//2), 2):
+			r,g,b = im.getpixel((i,j))
+			img.putpixel( (i,j), (r,g,b))
+	img = img.filter(ImageFilter.SMOOTH)
+	img = img.filter(ImageFilter.DETAIL)
+	sharpness = ImageEnhance.Sharpness(img)
+	img = sharpness.enhance(0)
+	brightness = ImageEnhance.Brightness(img)
+	img = brightness.enhance(1.125)
+	img.save("out.png")
+	await ctx.send(file=discord.File("out.png"))
 
 @loop(minutes=5)
 async def study():
 	ch1 = await bot.fetch_channel(int(os.getenv('senior-spam')))
 	ch2 = await bot.fetch_channel(int(os.getenv('spam')))
 	ch3 = await bot.fetch_channel(int(os.getenv("bot-spam")))
-
+	sug = ["go and study", "take a stroll", "look outside", "take a sip of water", "take a break", "close your eyes and breathe", "stand up and stretch"]
 	channels = 	[ch1, ch2, ch3]
 	for name, msg in msg_count.items():
 		if msg > 25:
 			for channel in channels:
 				for message in await channel.history(limit=10).flatten():
 					if str(message.author) == name :
-						await channel.send("{} You're chatting to0 much, go and study!".format(message.author))
+						await channel.send("{} You're chatting too much, ".format(message.author) + random.choice(sug) + "!")
 						break
 	msg_count.clear()
 				
-		
-
-
+@bot.command("swear", help="Swear off! Usage: %swear lang, where 1st letter of language is used. Languages available: English, Hindi, Spanish, German, Russian")
+async def swear(ctx, lang="e") :
+	l = lang.lower()[0]
+	if l == 'e':
+		await ctx.send(random.choice(sw_e))
+	elif l == 'h':
+		await ctx.send(random.choice(sw_h))
+	elif l == 's':
+		await ctx.send(random.choice(sw_s))
+	elif l == 'g':
+		await ctx.send(random.choice(sw_g))
+	elif l == 'r':
+		await ctx.send(random.choice(sw_r))
+	else:
+		await ctx.send("The language is invalid!")
+	
+sw_e = ["A$$hole", "Motherf*cker", "F*ck off", "D*ckhead", "Son of a B*tch", "Shit", "Bloody Hell", "Dumbass"]
+sw_s = ["Puta", "Perra", "Mierda", "Hijo de Puta", "Puta Madre", "Que cabrón", "Joder!", "Gilipollas", "Los cojones!", "La madre que te parió!", "Tonto del culo", "Coño"]
+sw_h = ["Bsdk", "Ch*tiya", "BC", "G*ndu", "Maadarch*d", "Saala", "Harami", "Kutta"]
+sw_g = ["Huhrensohn", "Scheiße", "Fick dich", "Leck mich am Arsch", "Küss meinen Arsch", "Arschloch", "Verpiss dich!", "Dummkopf"]
+sw_r = ["Жопа", "Гавно", "лох", "хуй", "жо́па", "Трахни тебя", "су́кин сын", "муда́к", "ублю́док"]
+sw = ["Puta", "Fuck", "Asshole", "Motherfucker", "Fuck off", "Duckhead", "Son of a Bitch", "Bloody Hell", "Dumbass", "Perra", "Mierda", "Hijo de Puta", "Puta Madre", "Que cabrón", "Joder!", "Gilipollas", "Los cojones!", "La madre que te parió!", "Tonto del culo", "Coño","Ch*tiya", "BC", "Gandu", "Maadarchod", "Saala", "Harami", "Kutta","Huhrensohn", "Scheiße", "Fick dich", "Leck mich am Arsch", "Küss meinen Arsch", "Arschloch", "Verpiss dich!", "Dummkopf","Жопа", "Гавно", "лох", "хуй", "жо́па", "Трахни тебя", "су́кин сын", "муда́к", "ублю́док", "cunt", "pussy", "twat", "whore", "slut", "dick", "bhosdike", "Bsdk", "bitch"]
 birthday.start()
 study.start()
 
