@@ -552,7 +552,7 @@ sw_s = ["Puta", "Perra", "Mierda", "Hijo de Puta", "Puta Madre", "Que cabrón", 
 sw_h = ["Bsdk", "Ch*tiya", "BC", "G*ndu", "Maadarch*d", "Saala", "Harami", "Kutta"]
 sw_g = ["Huhrensohn", "Scheiße", "Fick dich", "Leck mich am Arsch", "Küss meinen Arsch", "Arschloch", "Verpiss dich!", "Dummkopf"]
 sw_r = ["Жопа", "Гавно", "лох", "хуй", "жо́па", "Трахни тебя", "су́кин сын", "муда́к", "ублю́док"]
-sw = ["Puta", "Fuck", "Asshole", "Motherfucker", "Fuck off", "Duckhead", "Son of a Bitch", "Bloody Hell", "Dumbass", "Perra", "Mierda", "Hijo de Puta", "Puta Madre", "Que cabrón", "Joder!", "Gilipollas", "Los cojones!", "La madre que te parió!", "Tonto del culo", "Coño","Ch*tiya", "BC", "Gandu", "Maadarchod", "Saala", "Harami", "Kutta","Huhrensohn", "Scheiße", "Fick dich", "Leck mich am Arsch", "Küss meinen Arsch", "Arschloch", "Verpiss dich!", "Dummkopf","Жопа", "Гавно", "лох", "хуй", "жо́па", "Трахни тебя", "су́кин сын", "муда́к", "ублю́док", "cunt", "pussy", "twat", "whore", "slut", "dick", "bhosdike", "Bsdk", "bitch"]
+sw = [" Puta ", "Fuck", "Asshole", "Motherfucker", "Fuck off", "Dickhead", "Son of a Bitch", "Bloody Hell", "Dumbass", "Perra", "Mierda", "Hijo de Puta", "Puta Madre", "Que cabrón", "Joder!", "Gilipollas", "Los cojones!", "La madre que te parió!", "Tonto del culo", "Coño","Ch*tiya", " BC ", "Gandu", "Maadarchod", "Saala", "Harami", "Kutta","Huhrensohn", "Scheiße", "Fick dich", "Leck mich am Arsch", "Küss meinen Arsch", "Arschloch", "Verpiss dich!", "Dummkopf","Жопа", "Гавно", "лох", "хуй", "жо́па", "Трахни тебя", "су́кин сын", "муда́к", "ублю́док", " cunt ", " pussy ", " twat ", " whore ", " slut ", " dick ", "bhosdike", "Bsdk", " bitch "]
 birthday.start()
 study.start()
 
