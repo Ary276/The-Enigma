@@ -582,7 +582,7 @@ sw_g = ["Huhrensohn", "Scheiße", "Fick dich", "Leck mich am Arsch", "Küss mein
 sw_r = ["Жопа", "Гавно", "лох", "хуй", "жо́па", "Трахни тебя", "су́кин сын", "муда́к", "ублю́док"]
 sw = [" Puta", "Fuck", "Asshole", "Motherfucker", "Fuck off", "Dickhead", "Son of a Bitch", "Bloody Hell", "Dumbass", "Perra", "Mierda", "Hijo de Puta", "Puta Madre", "Que cabrón", "Joder!", "Gilipollas", "Los cojones!", "La madre que te parió!", "Tonto del culo", "Coño","Ch*tiya", "Gandu", "Maadarchod", "Saala ", "Harami", "Kutta","Huhrensohn", "Scheiße", "Fick dich", "Leck mich am Arsch", "Küss meinen Arsch", "Arschloch", "Verpiss dich!", "Dummkopf","Жопа", "Гавно", "лох", "хуй", "жо́па", "Трахни тебя", "су́кин сын", "муда́к", "ублю́док", "cunt", "pussy", "twat", "whore", "slut", "dick", "bhosdike", "Bsdk", "bitch"]
 
-@bot.command("emoji", aliases=["e"])
+@bot.command("emoji", aliases=["e"], help="Reply with standard and custom emoji. Usage [%e emoji_name] or [%e list] to see all emojis")
 async def emoji(ctx, emoji):
 	if emoji == "list":
 		start = 0
@@ -621,7 +621,7 @@ async def emoji(ctx, emoji):
 	await ctx.reply(f":{emoji}:", allowed_mentions=discord.AllowedMentions.none())
 	return
 
-@bot.command("react", aliases=["r"])
+@bot.command("react", aliases=["r"], help="React to a post with custom emoji. Usage %r emoji_name")
 async def emoji(ctx, emoji):
 	msg = ctx.message.reference
 	message = await ctx.fetch_message(msg.message_id)
