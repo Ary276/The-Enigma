@@ -118,15 +118,43 @@ async def rant(ctx, *, args):
 
 	def chek(message):
 		return message.content.lower() in ["y", "n"] and message.author == ctx.message.author
-	
+
+	def ch(message):
+		return message.author == ctx.message.author
+
+	try:
+		await ctx.send("Do you wish to add a title? Respond with the `title` or else reply with  `n / N / no / No` to send the rant without a title")
+		title = await bot.wait_for('message', timeout=30.0, check=ch)
+	except asyncio.TimeoutError:
+		await ctx.send("Your message shall be sent without a title")
+		title = ""
+		pass
+	else:
+		if title.content in ["n", "no", "No", "NO", "N"]:
+			title = ""
+		else:
+			title = title.content
+		await ctx.send(f"Your rant will be titled: {title}")
+		pass
+
 	try:
 		await ctx.send("Do you wish to remain Anonymous? Respond with y/n")
-		msg = await bot.wait_for('message', timeout=30.0, check=chek)
+		msg = await bot.wait_for('message', timeout=30.0, check=ch)
 	except asyncio.TimeoutError:
 		await ctx.send("Your request has timed out")
 	else:
-		rant = await rant_approval.send(args[:])
-		await ctx.send("Your rant has been sent!")
+		embed_non_anon = discord.Embed(type = "article", title=title, description = args[:], color=discord.Color.random()).set_author(name=msg.author.display_name, icon_url=msg.author.avatar_url)
+		embed_anon = discord.Embed(type = "article",title=title, description = args[:], color=discord.Color.random()).set_author(name="Anonymous", icon_url="https://blog.radware.com/wp-content/uploads/2020/06/anonymous.jpg")
+		if(msg.content.lower() == "n"):
+			rant = await rant_approval.send(embed = embed_non_anon)
+			await ctx.send("Your rant has been sent! This is how your rant will appear to the moderators.")
+			await ctx.send(embed = embed_non_anon)
+
+		else:
+			rant = await rant_approval.send(embed = embed_anon)
+			await ctx.send("Your rant has been sent! This is how your rant will appear to the moderators.")
+			await ctx.send(embed = embed_anon)
+
 		try:
 			reaction = await bot.wait_for('raw_reaction_add', timeout=3600.0, check=check)
 		except asyncio.TimeoutError:
@@ -134,9 +162,9 @@ async def rant(ctx, *, args):
 		else:
 			await ctx.send("Your rant has been approved!")
 			if(msg.content.lower() == "n"):
-				await rants.send(embed = discord.Embed(type = "article", description = rant.content, color=discord.Color.random()).set_author(name=msg.author.display_name, icon_url=msg.author.avatar_url))
+				await rants.send(embed = embed_non_anon)
 			else:
-				await rants.send(embed = discord.Embed(type = "article", description = rant.content, color=discord.Color.random()).set_author(name="Anonymous", icon_url="https://blog.radware.com/wp-content/uploads/2020/06/anonymous.jpg"))
+				await rants.send(embed = embed_anon)
 
 @bot.command(name = "gif", help= "sends a gif based on search term")
 async def gif(ctx, search_term):
@@ -267,8 +295,8 @@ async def on_message(message):
             await message.channel.send(embed = discord.Embed().set_thumbnail(url="https://media.tenor.com/images/f8a02c67648240f3eba5b3fb871e7c37/tenor.gif"))
 	
     for i in sw:
-    	if i.lower() in message.content.lower():
-            await message.reply("You kiss your mom with that mouth b*tch!")
+    	if random.random() >= 0.75 and i.lower() in message.content.lower():
+            await message.reply("You kiss your mom with that mouth b*tch!", allowed_mentions=discord.AllowedMentions.none())
             break
     
     try:
@@ -552,7 +580,59 @@ sw_s = ["Puta", "Perra", "Mierda", "Hijo de Puta", "Puta Madre", "Que cabrón", 
 sw_h = ["Bsdk", "Ch*tiya", "BC", "G*ndu", "Maadarch*d", "Saala", "Harami", "Kutta"]
 sw_g = ["Huhrensohn", "Scheiße", "Fick dich", "Leck mich am Arsch", "Küss meinen Arsch", "Arschloch", "Verpiss dich!", "Dummkopf"]
 sw_r = ["Жопа", "Гавно", "лох", "хуй", "жо́па", "Трахни тебя", "су́кин сын", "муда́к", "ублю́док"]
-sw = [" Puta ", "Fuck", "Asshole", "Motherfucker", "Fuck off", "Dickhead", "Son of a Bitch", "Bloody Hell", "Dumbass", "Perra", "Mierda", "Hijo de Puta", "Puta Madre", "Que cabrón", "Joder!", "Gilipollas", "Los cojones!", "La madre que te parió!", "Tonto del culo", "Coño","Ch*tiya", " BC ", "Gandu", "Maadarchod", "Saala", "Harami", "Kutta","Huhrensohn", "Scheiße", "Fick dich", "Leck mich am Arsch", "Küss meinen Arsch", "Arschloch", "Verpiss dich!", "Dummkopf","Жопа", "Гавно", "лох", "хуй", "жо́па", "Трахни тебя", "су́кин сын", "муда́к", "ублю́док", " cunt ", " pussy ", " twat ", " whore ", " slut ", " dick ", "bhosdike", "Bsdk", " bitch "]
+sw = [" Puta", "Fuck", "Asshole", "Motherfucker", "Fuck off", "Dickhead", "Son of a Bitch", "Bloody Hell", "Dumbass", "Perra", "Mierda", "Hijo de Puta", "Puta Madre", "Que cabrón", "Joder!", "Gilipollas", "Los cojones!", "La madre que te parió!", "Tonto del culo", "Coño","Ch*tiya", "Gandu", "Maadarchod", "Saala ", "Harami", "Kutta","Huhrensohn", "Scheiße", "Fick dich", "Leck mich am Arsch", "Küss meinen Arsch", "Arschloch", "Verpiss dich!", "Dummkopf","Жопа", "Гавно", "лох", "хуй", "жо́па", "Трахни тебя", "су́кин сын", "муда́к", "ублю́док", "cunt", "pussy", "twat", "whore", "slut", "dick", "bhosdike", "Bsdk", "bitch"]
+
+@bot.command("emoji", aliases=["e"])
+async def emoji(ctx, emoji):
+	if emoji == "list":
+		start = 0
+		async def send_list(start, end):
+			if end > len(bot.emojis) or start < 0:
+				await ctx.send("You have reached the end of the list of emojis")
+				return
+			ls = ""
+			for i in range(start, end):
+				ls += f"{i+1}. {bot.emojis[i].name} : <:{bot.emojis[i].name}:{bot.emojis[i].id}>\n"
+			await ctx.send(embed=discord.Embed(title = "Available emojis", description=ls + "\n Send `next` or `prev` to view other emojis"), delete_after = 30)
+
+		def check(message):
+			return message.content.lower() in ["next", "prev"] and message.author == ctx.message.author
+	
+		await send_list(start, start+20)
+		while True:
+			try:
+				message = await bot.wait_for('message', timeout=20.0, check=check)
+			except asyncio.TimeoutError:
+				await ctx.send("Timeout")
+				break
+			else:
+				if message.content.lower() == "next":
+					start+= 20
+					await send_list(start, start+20)
+				else :
+					start -= 20
+					await send_list(start, start+20)
+		return
+
+	for i in range(len(bot.emojis)):
+		if emoji == bot.emojis[i].name:
+			await ctx.reply(f"<:{bot.emojis[i].name}:{bot.emojis[i].id}>", allowed_mentions=discord.AllowedMentions.none())
+			return
+	await ctx.reply(f":{emoji}:", allowed_mentions=discord.AllowedMentions.none())
+	return
+
+@bot.command("react", aliases=["r"])
+async def emoji(ctx, emoji):
+	msg = ctx.message.reference
+	message = await ctx.fetch_message(msg.message_id)
+	for i in range(len(bot.emojis)):
+		if emoji == bot.emojis[i].name: 
+			await message.add_reaction(bot.emojis[i])
+			return
+	await ctx.reply("Emoji not found", allowed_mentions=discord.AllowedMentions.none())
+	return
+
+
 birthday.start()
 study.start()
 
