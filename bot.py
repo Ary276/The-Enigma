@@ -14,6 +14,7 @@ from math import inf as infinity
 from PIL import Image, ImageFilter, ImageEnhance
 import re
 from fuzzywuzzy import process, fuzz
+from io import BytesIO
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -310,14 +311,25 @@ async def on_message(message):
 	p = re.compile(r';\S+;')
 	try:
 		msg, n = p.subn(repl, message.content)
+		ref = message.reference
+		if ref != None:
+			msg_id = ref.message_id
+			ref_msg = await message.channel.fetch_message(msg_id)
+			em_msg = ref_msg.content + "\n" + f"[Link to Message]({ref_msg.jump_url})"
+			embed = discord.Embed(type = "article", description = em_msg, color=discord.Color.random()).set_author(name=ref_msg.author.display_name, icon_url=ref_msg.author.avatar_url)
+		
 		if(n-k > 0):
 			#webhook = await message.channel.create_webhook(name=message.author.display_name)
 			webhook = webhooks[message.channel.id]
-			await webhook.send(str(msg), username=message.author.display_name, avatar_url=message.author.avatar_url, allowed_mentions=discord.AllowedMentions(replied_user=True))
+			try:
+				await webhook.send(str(msg), embed=embed, username=message.author.display_name, avatar_url=message.author.avatar_url, allowed_mentions=discord.AllowedMentions(replied_user=True))
+
+			except:
+				await webhook.send(str(msg), username=message.author.display_name, avatar_url=message.author.avatar_url, allowed_mentions=discord.AllowedMentions(replied_user=True))
 			await message.delete()
 			#await webhook.delete()
 	except:
-			pass
+		pass
 		
 	if 'scope' in message.content.lower():
 		response = "Look, there's very little scope in astronomy, we only have the telescope. Oceanography is a bit better, since they have the bathyscope and the periscope. If you're looking for maximum scope, however, I'd suggest you ditch science and take up medicine instead - they have the endoscope, the microscope, the stethoscope, the laparoscope, the gastroscope, the bronchoscope, the laryngoscope, the urethroscope, the opthalmoscope, and several other scopes!"
@@ -707,15 +719,33 @@ async def react(ctx, emoji):
 	msg = ctx.message.reference
 	message = await ctx.fetch_message(msg.message_id)
 	for i in range(len(bot.emojis)):
-		print(fuzz.partial_ratio(emoji, bot.emojis[i].name))
-		print(fuzz.ratio(emoji, bot.emojis[i].name))
-		if fuzz.partial_ratio(emoji, bot.emojis[i].name) > 75 or fuzz.ratio(emoji, bot.emojis[i].name) > 50: 
+		#print(fuzz.partial_ratio(emoji, bot.emojis[i].name))
+		#print(fuzz.ratio(emoji, bot.emojis[i].name))
+		if fuzz.partial_ratio(emoji, bot.emojis[i].name) > 90 or fuzz.ratio(emoji, bot.emojis[i].name) > 90: 
 			await message.add_reaction(bot.emojis[i])
 			try:
 				await ctx.message.delete()
 			except:
 				pass
 			return
+	em = process.extract(emoji, emojis.keys(), limit=1)
+	em_a = process.extract(emoji, anim_emojis.keys(), limit=1)
+	if em_a[0][1] > em[0][1]:
+		im = requests.get(f'https://cdn.discordapp.com/emojis/{anim_emojis[em_a[0][0]]}.gif?v=1').content
+		emo = await ctx.message.guild.create_custom_emoji(name=em_a[0][0], image=im)
+	else:
+		im = requests.get(f'https://cdn.discordapp.com/emojis/{emojis[em[0][0]]}.png?v=1').content
+		emo = await ctx.message.guild.create_custom_emoji(name=em[0][0], image=im)
+	
+	await message.add_reaction(emo)
+	await emo.delete()
+	try:
+		await ctx.message.delete()
+	except:
+		pass
+	return
+
+	
 	await ctx.reply("Emoji not found", allowed_mentions=discord.AllowedMentions.none())
 		
 	return
