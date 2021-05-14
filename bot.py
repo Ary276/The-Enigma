@@ -14,7 +14,6 @@ from math import inf as infinity
 from PIL import Image, ImageFilter, ImageEnhance
 import re
 from fuzzywuzzy import process, fuzz
-from io import BytesIO
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
