@@ -571,8 +571,8 @@ async def tic_tac_toe(ctx, name = "Charlie"):
 	else:
 		await ctx.send("The Winner is {}".format("Enigma" if n == 1 else name) + "\n" + "Congratulations {} !!!".format("Enigma" if n == 1 else name) + "\n" + "🎉🎉🎉🎉🎉🎉")
 
-#@bot.event
-#async def on_command_error(ctx, *args, **kwargs):
+@bot.event
+async def on_command_error(ctx, *args, **kwargs):
 	try:
 		await ctx.send("That did not work as expected. Kindly ensure you are using the command correctly, use %help if you are unsure of the usage. If the issue persists, kindly inform or raise the issue on GitHub, and the issue will be resolved as soon as possible!", delete_after=30)
 	except:
