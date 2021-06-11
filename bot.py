@@ -194,7 +194,7 @@ async def rant(ctx, *, args):
 			await ctx.send(embed = embed_anon)
 
 		try:
-			reaction = await bot.wait_for('raw_reaction_add', timeout=3600.0, check=check)
+			reaction = await bot.wait_for('raw_reaction_add', timeout=10800.0, check=check)
 		except asyncio.TimeoutError:
 			await ctx.send("Your rant has timed-out. Either a mod has not approved it yet, or your message violates the rules. If it the former, feel free to send again later.")
 		else:
