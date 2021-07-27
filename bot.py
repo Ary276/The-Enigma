@@ -839,6 +839,121 @@ async def add(ctx, *args):
 	await e_msg.pin()
 	await ae_msg.pin()
 
+category_data = open("data.json", "r")
+categories = json.load(category_data)
+
+HANGMANPICS = ['''
+  +---+  
+  |   |  
+      |  
+      |  
+      |  
+      |  
+=========''', '''
+  +---+  
+  |   |  
+  O   |  
+      |  
+      |  
+      |  
+=========''', '''
+  +---+  
+  |   |  
+  O   |  
+  |   |  
+      |  
+      |  
+=========''', '''
+  +---+  
+  |   |  
+  O   |  
+ /|   |  
+      |  
+      |  
+=========''', '''
+  +---+  
+  |   |  
+  O   |  
+ /|\  |  
+      |  
+      |  
+=========''', '''
+  +---+  
+  |   |  
+  O   |  
+ /|\  |  
+ /    |  
+      |  
+=========''', '''
+  +---+  
+  |   |  
+  O   |  
+ /|\  |  
+ / \  |  
+      |  
+=========''']
+
+@bot.command("hangman", help="Play a Game of Hangman!")
+async def hangman(ctx, category = "normal"):
+	if category == "list":
+		await ctx.send(", ".join(categories.keys()))
+		return
+
+	word_list = categories[category]
+
+	await ctx.send("Welcome to Hangman! All the best! Use the syntax `hm [char]` to send the letter you wish to guess. Only first character after hm will be taken. Note that all non alphabetical characters are removed so The Enigma will be the word theenigma" + f"\n Category {category}")
+	await asyncio.sleep(1)
+
+	w = random.choice(word_list)
+	word = list(w)
+	n = len(word)
+	#print(word)
+	guess = ["_" for i in range(n)]
+	await ctx.send("`" + " ".join(guess) + "`")
+	hangman = 0
+	def check(message):
+		#print(message.content.lower().split()[0])
+		return message.content.lower().split()[0] == "hm" or  message.content.lower() == "exit"
+	guess_list = []
+	while(n>0):
+		m=n
+		await ctx.send("Guess a letter!")
+		#char = str(input("Guess a letter: "))
+		try:
+			message = await bot.wait_for('message', timeout=60.0, check=check)
+		except asyncio.TimeoutError:
+			await ctx.send("Timeout! Please send your response faster!")
+			break
+		else:
+			if  message.content.lower() == "exit":
+				await ctx.send("Game Exited")
+				return
+			char = message.content.lower().split()[1][0]
+			if char.isalpha() == False:
+				await ctx.send("Enter a valid character!")
+				continue 
+			if char in guess_list:
+				await ctx.send("This leter has already been used!")
+				continue
+			guess_list.append(char)
+			for i in range(len(word)):
+				if char == word[i]:
+					guess[i] = word[i]
+					word[i] = "_"
+					n-=1
+			if m == n:
+				hangman += 1
+				await ctx.send("`" + "hangman"[:hangman]+ "\n" + HANGMANPICS[hangman-1] + "`")
+				if hangman == 7:
+					break
+			await ctx.send(f"Your character was: **{char}**" + "\n" + "`" + " ".join(guess) + "`")
+
+	if (n==0):
+		await ctx.send("Congratulations! You have guessed the answer correctly!")
+	else:
+		await ctx.send("You ran out of guesses :( Play again!")
+	await ctx.send("The Answer was: " + w + "\n" + "Game Over")
+
 webhooks = {}
 emojis = {}	
 anim_emojis = {}
